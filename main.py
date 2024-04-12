@@ -7,8 +7,6 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_openai import ChatOpenAI
 
-os.environ['OPENAI_API_KEY'] = "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"
-
 model = ChatOpenAI(temperature=0)
 
 class Resume(BaseModel):
