@@ -34,41 +34,44 @@ app.add_middleware(
 
 @app.post("/parse_resume")
 def parse_resume(request: Request):
+    try:
 
-    resume = request.resume    
-    query = f"""Esta es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencia y educación:
-    {resume}
-    """
+        resume = request.resume    
+        query = f"""Esta es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencia y educación:
+        {resume}
+        """
 
-    parser = JsonOutputParser(pydantic_object=Resume)
+        parser = JsonOutputParser(pydantic_object=Resume)
 
-    prompt = PromptTemplate(
-        template="Answer the user query.\n{format_instructions}\n{query}\n",
-        input_variables=["query"],
-        partial_variables={"format_instructions": parser.get_format_instructions()},
-    )
+        prompt = PromptTemplate(
+            template="Answer the user query.\n{format_instructions}\n{query}\n",
+            input_variables=["query"],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
 
-    chain = prompt | model | parser
+        chain = prompt | model | parser
 
-    respuesta = chain.invoke({"query": query})
+        respuesta = chain.invoke({"query": query})
 
-    temp_list = []
-    for estudio in respuesta['education']:
-        temp_list.append({
-            'university':estudio['university'], 
-            'dates': estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
-            'program': estudio['program']
-            })
-        
-    respuesta['education'] = temp_list
+        temp_list = []
+        for estudio in respuesta['education']:
+            temp_list.append({
+                'university':estudio['university'], 
+                'dates': estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                'program': estudio['program']
+                })
+            
+        respuesta['education'] = temp_list
 
-    temp_list = []
-    for trabajo in respuesta['experience']:
-        temp_list.append({
-            'company':trabajo['company'], 
-            'dates': trabajo['dates'] if any([char.isnumeric() for char in trabajo['dates']]) or any([word in trabajo['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
-            'role': trabajo['role']
-            })
-        
-    respuesta['experience'] = temp_list
-    return respuesta
+        temp_list = []
+        for trabajo in respuesta['experience']:
+            temp_list.append({
+                'company':trabajo['company'], 
+                'dates': trabajo['dates'] if any([char.isnumeric() for char in trabajo['dates']]) or any([word in trabajo['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                'role': trabajo['role']
+                })
+            
+        respuesta['experience'] = temp_list
+        return respuesta
+    except Exception as e:
+        return e
