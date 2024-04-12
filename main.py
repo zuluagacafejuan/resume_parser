@@ -20,7 +20,7 @@ class Resume(BaseModel):
     education: list = Field(description="educación del candidato. De cada uno extraer: Universidad, estudio y fecha. Cada educacion es un json con keys university (universidad), dates (fecha) y program (estudio realizado). Si no encuentras fecha para ese estudio pon '-' en la fecha")
 
 class Request(BaseModel):
-    resume: str
+    resume: str = Field(description="CV de la persona en un string")
 
 app = FastAPI()
 app.add_middleware(
