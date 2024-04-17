@@ -17,7 +17,7 @@ class Resume(BaseModel):
     description: str = Field(description="descripción profesional del candidato")
     career: str = Field(description="carrera que estudió el candidato. Extraer: solo la carrera, no la universidad.")
     experience: list = Field(description="experiencia laboral del candidato. Cada experiencia es un json con keys company (compañia), dates (fecha) y role (cargo). Si no encuentras uno de los valores pon un string vacio. Si no encuentras fecha para esa experiencia pon '-' en la fecha")
-    education: list = Field(description="educación del candidato. De cada uno extraer: Universidad, estudio y fecha. Cada educacion es un json con keys university (universidad), dates (fecha) y program (estudio realizado). Si no encuentras fecha para ese estudio pon '-' en la fecha")
+    education: list = Field(description="educación del candidato. De cada uno extraer: Universidad, estudio y fecha. Cada educacion es un json con keys university (universidad), dates (fecha formato aaaa-mm-dd) y program (estudio realizado). Si no encuentras fecha para ese estudio pon '-' en la fecha")
 
 class Request(BaseModelPydantic):
     resume: str
