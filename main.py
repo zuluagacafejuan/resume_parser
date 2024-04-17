@@ -68,6 +68,7 @@ def parse_resume(request: Request):
             temp_list.append({
                 'company':trabajo['company'], 
                 'dates': trabajo['dates'] if any([char.isnumeric() for char in trabajo['dates']]) or any([word in trabajo['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                'description': trabajo['description'],
                 'role': trabajo['role']
                 })
             
