@@ -16,7 +16,7 @@ class Resume(BaseModel):
     skills: list = Field(description="lista de habilidades del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
     description: str = Field(description="descripción profesional del candidato")
     career: str = Field(description="carrera que estudió el candidato. Extraer: solo la carrera, no la universidad.")
-    experience: list = Field(description="experiencia laboral del candidato. Cada experiencia es un json con keys company (compañia), dates (fecha) y role (cargo). Si no encuentras uno de los valores pon un string vacio. Si no encuentras fecha para esa experiencia pon '-' en la fecha")
+    experience: list = Field(description="experiencia laboral del candidato. Cada experiencia es un json con keys company (compañia), description (descripcion), dates (fecha) y role (cargo). Si no encuentras uno de los valores pon un string vacio. Si no encuentras fecha para esa experiencia pon '-' en la fecha. Si no encuentras descripcion para esa experiencia pon '-' en la descripcion")
     education: list = Field(description="educación del candidato. De cada uno extraer: Universidad, estudio y fecha. Cada educacion es un json con keys university (universidad), dates (fecha formato aaaa-mm-dd) y program (estudio realizado). Si no encuentras fecha para ese estudio pon '-' en la fecha")
 
 class Request(BaseModelPydantic):
@@ -37,7 +37,7 @@ def parse_resume(request: Request):
     try:
 
         resume = request.resume    
-        query = f"""Esta es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencia y educación:
+        query = f"""Esta es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencias y educaciones:
         {resume}
         """
 
