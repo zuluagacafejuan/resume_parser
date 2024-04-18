@@ -88,7 +88,7 @@ def formatear_fechas(string):
             if coincidencias2:
                 return coincidencias2[0]
             else:
-                return None
+                return "01"
 
     if len([i for i in string if i == "-"]) == 1:
         fecha_inicio = ""
