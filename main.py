@@ -13,7 +13,7 @@ model = ChatOpenAI(temperature=0)
 
 class Resume(BaseModel):
     name: str = Field(description="nombre del candidato")
-    skills: list = Field(description="lista de habilidades blandas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
+    skills: list = Field(description="lista de habilidades del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
     softskills: list = Field(description="lista de habilidades blandas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
     hardskills: list = Field(description="lista de habilidades técnicas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
     description: str = Field(description="descripción profesional del candidato")
