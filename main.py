@@ -108,7 +108,7 @@ def formatear_fechas(string):
                 segmento_inicio = eliminar_año(segmento_inicio)
                 dia = obtener_dia(segmento_inicio)
 
-                fecha_inicio = f"{año}-{numero}-{dia}"
+                fecha_inicio = str(año)+"-"+str(numero)+"-"+str(dia)
                 continue
 
         for mes, numero in meses.items():
@@ -118,7 +118,7 @@ def formatear_fechas(string):
                 segmento_inicio = eliminar_año(segmento_fin)
                 dia = obtener_dia(segmento_fin)
 
-                fecha_fin = f"{año}-{numero}-{dia}"
+                fecha_fin = str(año)+"-"+str(numero)+"-"+str(dia)
                 continue
         return fecha_inicio+"|"+fecha_fin
     return string
