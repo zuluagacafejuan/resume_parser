@@ -13,10 +13,12 @@ model = ChatOpenAI(temperature=0)
 
 class Resume(BaseModel):
     name: str = Field(description="nombre del candidato")
-    skills: list = Field(description="lista de habilidades del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
+    skills: list = Field(description="lista de habilidades blandas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
+    softskills: list = Field(description="lista de habilidades blandas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
+    hardskills: list = Field(description="lista de habilidades técnicas del candidato presentes en todo el documento, identificalas a partir de descripcion, educacion y experiencia. En español.")
     description: str = Field(description="descripción profesional del candidato")
     career: str = Field(description="carrera que estudió el candidato. Extraer: solo la carrera, no la universidad.")
-    experience: list = Field(description="experiencia laboral del candidato. Cada experiencia es un json con keys company (compañia), description (descripcion), dates (fecha) y role (cargo). Si no encuentras uno de los valores pon un string vacio. Si no encuentras fecha para esa experiencia pon '-' en la fecha. Si no encuentras descripcion para esa experiencia pon '-' en la descripcion")
+    experience: list = Field(description="experiencia laboral del candidato. Cada experiencia es un json con keys company (compañia), description (descripcion), dates (fecha formato aaaa-mm-dd) y role (cargo). Si no encuentras uno de los valores pon un string vacio. Si no encuentras fecha para esa experiencia pon '-' en la fecha. Si no encuentras descripcion para esa experiencia pon '-' en la descripcion")
     education: list = Field(description="educación del candidato. De cada uno extraer: Universidad, estudio y fecha. Cada educacion es un json con keys university (universidad), dates (fecha formato aaaa-mm-dd) y program (estudio realizado). Si no encuentras fecha para ese estudio pon '-' en la fecha")
 
 class Request(BaseModelPydantic):
@@ -55,11 +57,12 @@ def parse_resume(request: Request):
 
         temp_list = []
         for estudio in respuesta['education']:
-            temp_list.append({
-                'university':estudio['university'], 
-                'dates': estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
-                'program': estudio['program']
-                })
+            if estudio['university'].lower().find('andes') == -1:
+                temp_list.append({
+                    'university':estudio['university'], 
+                    'dates': estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                    'program': estudio['program']
+                    })
             
         respuesta['education'] = temp_list
 
