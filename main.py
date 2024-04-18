@@ -123,7 +123,7 @@ def formatear_fechas(string):
                 fecha_fin = str(año)+"-"+str(numero)+"-"+str(dia)
                 continue
         return fecha_inicio+"|"+fecha_fin
-    return string
+    return string.replace(" - ", "|")
 
 @app.post("/parse_resume")
 def parse_resume(request: Request):
