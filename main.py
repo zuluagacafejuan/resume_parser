@@ -41,12 +41,14 @@ def formatear_fechas(string):
     # Caso 2015-2016
     patron = re.compile(r'^\d{4}-\d{4}$')
     if patron.match(string):
-        return f"{string.split("-")[0]}-01-01|{string.split("-")[1]}-01-01"
+        respuesta = f"{string.split("-")[0]}-01-01|{string.split("-")[1]}-01-01"
+        return respuesta
 
     # Caso 2015
     patron = re.compile(r'^\d{4}$')
     if patron.match(string):
-        return f"{string}-01-01"
+        respuesta = f"{string}-01-01"
+        return respuesta
     
     # Caso Enero de 2012 - Julio de 2012
     meses = {
