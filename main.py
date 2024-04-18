@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel as BaseModelPydantic
 
+import re
 import os
 from typing import List
 from langchain.prompts import PromptTemplate
@@ -33,6 +34,90 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def formatear_fechas(string):
+    # Caso -
+    if string.strip() == "-":
+        return "|"
+    # Caso 2015-2016
+    patron = re.compile(r'^\d{4}-\d{4}$')
+    if patron.match(string):
+        return f"{string.split("-")[0]}-01-01|{string.split("-")[1]}-01-01"
+
+    # Caso 2015
+    patron = re.compile(r'^\d{4}$')
+    if patron.match(string):
+        return f"{string}-01-01"
+    
+    # Caso Enero de 2012 - Julio de 2012
+    meses = {
+        'ene':'01',
+        'feb':'02',
+        'mar': '03',
+        'abr':'04',
+        'may': '05',
+        'jun':'06',
+        'jul':'07',
+        'ago':'08',
+        'sep':'09',
+        'oct':'10',
+        'nov':'11',
+        'dic':'12'
+    }
+
+    def obtener_año(frase):
+        patron_anio = re.compile(r'\d{4}')
+        coincidencias = patron_anio.findall(frase)
+        if coincidencias:
+            return coincidencias[0]
+        else:
+            return None
+        
+    def eliminar_año(frase):
+        patron_anio = re.compile(r'\d{4}')
+        frase_sin_año = patron_anio.sub('', frase)     
+        return frase_sin_año.strip()
+    
+    def obtener_dia(frase):
+        patron_dia = re.compile(r'\d{2}')
+        coincidencias = patron_dia.findall(frase)
+        if coincidencias:
+            return coincidencias[0]
+        else:
+            patron_dia = re.compile(r'\d{1}')
+            coincidencias2 = patron_dia.findall(frase)
+            if coincidencias2:
+                return coincidencias2[0]
+            else:
+                return None
+
+    if len([i for i in string if i == "-"]) == 1:
+        fecha_inicio = ""
+        fecha_fin = ""
+
+        segmento_inicio = string.split("-")[0].strip().lower()
+        segmento_fin = string.split("-")[1].strip().lower()
+
+        for mes, numero in meses.items():
+            if segmento_inicio.find(mes) != -1:
+
+                año = obtener_año(segmento_inicio)
+                segmento_inicio = eliminar_año(segmento_inicio)
+                dia = obtener_dia(segmento_inicio)
+
+                fecha_inicio = f"{año}-{numero}-{dia}"
+                continue
+
+        for mes, numero in meses.items():
+            if segmento_fin.find(mes) != -1:
+
+                año = obtener_año(segmento_fin)
+                segmento_inicio = eliminar_año(segmento_fin)
+                dia = obtener_dia(segmento_fin)
+
+                fecha_fin = f"{año}-{numero}-{dia}"
+                continue
+        return fecha_inicio+"|"+fecha_fin
+    return string
 
 @app.post("/parse_resume")
 def parse_resume(request: Request):
@@ -60,7 +145,7 @@ def parse_resume(request: Request):
             if estudio['university'].lower().find('andes') == -1:
                 temp_list.append({
                     'university':estudio['university'], 
-                    'dates': estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                    'dates': formatear_fechas(estudio['dates'] if any([char.isnumeric() for char in estudio['dates']]) or any([word in estudio['dates'].lower() for word in ['curso', 'present', 'current']]) else '-'),
                     'program': estudio['program']
                     })
             
@@ -70,7 +155,7 @@ def parse_resume(request: Request):
         for trabajo in respuesta['experience']:
             temp_list.append({
                 'company':trabajo['company'], 
-                'dates': trabajo['dates'] if any([char.isnumeric() for char in trabajo['dates']]) or any([word in trabajo['dates'].lower() for word in ['curso', 'present', 'current']]) else '-',
+                'dates': formatear_fechas(trabajo['dates'] if any([char.isnumeric() for char in trabajo['dates']]) or any([word in trabajo['dates'].lower() for word in ['curso', 'present', 'current']]) else '-'),
                 'description': trabajo['description'],
                 'role': trabajo['role']
                 })
