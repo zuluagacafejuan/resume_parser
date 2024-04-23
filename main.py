@@ -67,7 +67,11 @@ def formatear_fechas(string):
         'sep':'09',
         'oct':'10',
         'nov':'11',
-        'dic':'12'
+        'dic':'12',
+        'jan':'01',
+        'apr':'04',
+        'aug':'08',
+        'dec':'12'
     }
 
     def obtener_año(frase):
