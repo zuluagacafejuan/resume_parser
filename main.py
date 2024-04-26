@@ -134,7 +134,7 @@ def parse_resume(request: Request):
     try:
 
         resume = request.resume    
-        query = f"""Esta es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencias y educaciones:
+        query = f"""Si esto no corresponde a una hoja de vida, necesito que retornes en blanco los campos. Si es la hoja de vida de un candidato, de la cual debes extraer nombre de la persona, habilidades, descripcion profesional, carrera profesional, experiencias y educaciones:
         {resume}
         """
 
